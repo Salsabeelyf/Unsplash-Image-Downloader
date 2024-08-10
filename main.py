@@ -3,6 +3,15 @@ import selectolax
 import re
 import os
 
+def get_images(no_of_images):
+    resp = requests.get(base_url+searchQuery)
+
+    tree = selectolax.parser.HTMLParser(resp.content)
+
+    images = tree.css('a[title="Download this image"]')
+
+    return images[:no_of_images]
+
 searchQuery = 'house'
 
 base_url = 'https://unsplash.com/s/photos/'
@@ -11,7 +20,7 @@ resp = requests.get(base_url+searchQuery)
 
 tree = selectolax.parser.HTMLParser(resp.content)
 
-images = tree.css('a[title="Download this image"]')
+images = get_images(5)
 
 i=0
 for img in images:
