@@ -1,38 +1,14 @@
-import requests
-import selectolax
-import re
-import os
+import constants as c
+import helpers as h
 
-def get_images(no_of_images):
-    resp = requests.get(base_url+searchQuery)
 
-    tree = selectolax.parser.HTMLParser(resp.content)
+def run():
+    # Seach for images and get a list of them as html nodes
+    images = h.search_for_images(search_query=c.search_query, no_of_images=c.no_of_images)
 
-    images = tree.css('a[title="Download this image"]')
+    # Download images into local folder
+    h.download_images_locally(images)
 
-    return images[:no_of_images]
+if __name__ == '__main__':
+    run()
 
-searchQuery = 'house'
-
-base_url = 'https://unsplash.com/s/photos/'
-
-resp = requests.get(base_url+searchQuery)
-
-tree = selectolax.parser.HTMLParser(resp.content)
-
-images = get_images(5)
-
-i=0
-for img in images:
-    download_link = img.attrs['href']
-    img_src = re.search('(photos\/)(.*)/',download_link).group(2)
-    title = str.replace(tree.css(f'a[href*="{img_src}"]')[0].attrs['title'],' ', '-')
-
-    download_path = 'images/'+searchQuery
-    if not (os.path.isdir(download_path)):
-        os.mkdir(download_path)
-
-    with open(f'{download_path}/{title}.jpg', 'wb') as file:
-        print('Downloading image: %d ...' % i)
-        file.write(requests.get(download_link).content)
-    i = i+1
