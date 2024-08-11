@@ -1,3 +1,4 @@
+import sys
 import requests
 import selectolax
 import re
@@ -13,6 +14,9 @@ def get_images():
 
     images = tree.css('a[title="Download this image"]')
 
+    if len(images) == 0:
+        sys.exit(f'Couldn\'t find any images for keyword "{c.search_query}"!')
+
     return images
 
 # Get image title
@@ -21,7 +25,7 @@ def get_image_title(image):
     img_src = re.search('(photos\/)(.*)/',image.attrs['href']).group(2)
 
     # Find image title using its img_src based on id
-    title = str.replace(tree.css(f'a[href*="{img_src}"]')[0].attrs['title'],' ', '-')
+    title = str.replace(tree.css(f'a[href*="{img_src}"]')[0].attrs['title'],' ', '-') + f'-{img_src}'
 
     return title
 
