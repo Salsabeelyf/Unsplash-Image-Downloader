@@ -61,4 +61,6 @@ def check_all_are_downloaded(path, images_list):
     else:
         missing_images_titles = images_titles.difference(intersection_set)
         missing_images = [image for image in images_list if list(missing_images_titles).count(image.title) > 0]
+        print('Failed to download %d' % len(missing_images))
+        print('Redownloading %d images ...' % len(missing_images))
         download_images_locally(missing_images)
