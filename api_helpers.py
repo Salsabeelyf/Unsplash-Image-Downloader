@@ -18,7 +18,7 @@ def get_images_info():
 
         # Save images ids, titles, and download links if only free
         list = [classes.Image(id = image.get('id'),
-                              title = str.replace(image.get('alt_description'),' ','-'),
+                              title = image.get('slug'),
                               download_link = image.get('links').get('download')) for image in images if image.get('premium') == False]
         
         # Add images to images list

@@ -31,6 +31,34 @@ def download_images_locally(images_list):
             print('Downloading image: %d ...' % i)
             resp = requests.get(img.download_link)
             if resp.status_code != 200:
-                raise RuntimeError('Couldn\'t download Image %d' % resp.status_code)
-            file.write(resp.content)
+                print('Couldn\'t download Image %d' % resp.status_code)
+                print(resp.text)
+                print('Retrying ...')
+                resp = requests.get(img.download_link)
+                if resp.status_code != 200:
+                    print('Couldn\'t download Image %d' % resp.status_code)
+                    print(resp.text)
+                else:
+                    file.write(resp.content)
+            else:
+                file.write(resp.content)
         i = i+1
+
+    check_all_are_downloaded(download_path, images_list)
+
+
+def check_all_are_downloaded(path, images_list):
+    images_titles = set([image.title for image in images_list])
+
+    dir_list = os.listdir(path)
+    
+    dir_list = [str.replace(file_name, '.jpg','') for file_name in dir_list]
+
+    intersection_set = set(dir_list).intersection(images_titles)
+ 
+    if len(intersection_set)==len(images_titles):
+        print("All images downloaded successfully")
+    else:
+        missing_images_titles = images_titles.difference(intersection_set)
+        missing_images = [image for image in images_list if list(missing_images_titles).count(image.title) > 0]
+        download_images_locally(missing_images)
