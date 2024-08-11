@@ -34,17 +34,21 @@ def get_image_title(image):
      
 
 # Create local download folder if doesn't exist
-def create_local_folder(path):
+def create_local_folder():
+        path = 'images/'+c.search_query
+        if not (os.path.isdir('images')):
+            os.mkdir('images')
         if not (os.path.isdir(path)):
             os.mkdir(path)
+        return path
 
 
 def download_images_locally(images):
     i=1
     for img in images:
         # Get download folder ready
-        download_path = 'images/'+c.search_query
-        create_local_folder(download_path)
+        
+        download_path = create_local_folder()
 
         # Download images into local folder
         with open(f'{download_path}/{get_image_title(img)}.jpg', 'wb') as file:
