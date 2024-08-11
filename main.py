@@ -13,11 +13,13 @@ def run():
     c.no_of_images = int(sys.argv[2])
 
     # Seach for images and get a list of them as html nodes
-    images = h.search_for_images(search_query=c.search_query, no_of_images=c.no_of_images)
+    images_list = h.decide_html_or_api()
 
     # Download images into local folder
-    h.download_images_locally(images)
+    h.download_images_locally(images_list)
 
+
+    
 if __name__ == '__main__':
     run()
 

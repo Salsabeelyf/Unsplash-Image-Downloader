@@ -1,37 +1,15 @@
 import requests
-import selectolax
-import re
 import os
+import api_helpers
+import html_helpers
 import constants as c
 
-# Get a list of images download link html nodes
-def get_images(no_of_images):
-    resp = requests.get(c.base_url+c.search_query)
+def decide_html_or_api():
+    images = html_helpers.get_images()
 
-    global tree
-    tree = selectolax.parser.HTMLParser(resp.content)
-
-    images = tree.css('a[title="Download this image"]')
-
-    return images[:no_of_images]
-
-# search for images using search query
-def search_for_images(search_query, no_of_images):
-    resp = requests.get(c.base_url+search_query)
-    tree = selectolax.parser.HTMLParser(resp.content)
-
-    return get_images(no_of_images)
-
-
-def get_image_title(image):
-    # Exctract image id from its download link
-    img_src = re.search('(photos\/)(.*)/',image.attrs['href']).group(2)
-
-    # Find image title using its img_src based on id
-    title = str.replace(tree.css(f'a[href*="{img_src}"]')[0].attrs['title'],' ', '-')
-
-    return title
-     
+    if c.no_of_images <= len(images):
+        return html_helpers.get_images_info(images)
+    return api_helpers.get_images_info()
 
 # Create local download folder if doesn't exist
 def create_local_folder():
@@ -42,16 +20,17 @@ def create_local_folder():
             os.mkdir(path)
         return path
 
+def download_images_locally(images_list):
+    # Get download folder ready
+    download_path = create_local_folder()
 
-def download_images_locally(images):
     i=1
-    for img in images:
-        # Get download folder ready
-        
-        download_path = create_local_folder()
-
+    for img in images_list:
         # Download images into local folder
-        with open(f'{download_path}/{get_image_title(img)}.jpg', 'wb') as file:
+        with open(f'{download_path}/{img.title}.jpg', 'wb') as file:
             print('Downloading image: %d ...' % i)
-            file.write(requests.get(img.attrs['href']).content)
+            resp = requests.get(img.download_link)
+            if resp.status_code != 200:
+                raise RuntimeError('Couldn\'t download Image %d' % resp.status_code)
+            file.write(resp.content)
         i = i+1
