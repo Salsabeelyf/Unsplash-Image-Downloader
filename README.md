@@ -4,11 +4,11 @@
 
 ## About 
 
-* A python script that scrapes images from Unsplash, given `search keyword` and `number of images`, then
+* A python script that scrapes images from [Unsplash website](https://unsplash.com/ "Unsplash website"), given `search keyword` and `number of images`, then
 
-* Download the highest resolution images
+* Downloads the highest resolution images
 
-* watermarked images are execluded
+* Watermarked images are execluded
 
 ## HTML-based scraping using requests and selectolax
 
@@ -17,7 +17,7 @@
 ## Installing
 
 #### Download the code from Github
-#### Open CLI and Go to the code folder
+#### Open CLI and Go to the project folder
 #### Run the following command
 
 ```
